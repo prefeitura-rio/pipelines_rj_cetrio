@@ -16,7 +16,7 @@ class constants(Enum):
     ######################################
     # Agent labels
     ######################################
-    RJ_CETRIO_AGENT_LABEL = "rj-cetrio"
+    RJ_CETRIO_AGENT_LABEL = "cetrio"
 
     ######################################
     # Other constants
