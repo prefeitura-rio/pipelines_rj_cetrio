@@ -36,7 +36,7 @@ ocr_radar_default_parameters = {
     "db_port": "1433",
     "db_type": "sql_server",
     "infisical_secret_path": "/db-ocr-radar",
-    "dataset_id": "recursos_humanos_ocr_radar",
+    "dataset_id": "ocr_radar",
 }
 dump_sql_ocr_radar_flow = set_default_parameters(
     dump_sql_ocr_radar_flow, default_parameters=ocr_radar_default_parameters
