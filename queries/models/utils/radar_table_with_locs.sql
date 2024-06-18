@@ -18,7 +18,7 @@ tb AS (
     t1.camera_numero,
     t1.empresa,
     COALESCE(t2.latitude, t1.camera_latitude) AS latitude,
-    COALESCE(t2.longitude, t1.camera_longitude) AS latitude,
+    COALESCE(t2.longitude, t1.camera_longitude) AS longitude,
     DATETIME(t1.datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
   FROM `rj-cetrio.ocr_radar.readings_*` t1
   JOIN loc t2
