@@ -12,6 +12,13 @@ WITH loc AS (
 
 tb AS (
   SELECT
+    *
+  FROM `rj-cetrio.ocr_radar.readings_*` t1
+  WHERE placa=""
+
+)
+
+SELECT
     t1.placa,
     t1.tipoveiculo,
     t1.velocidade,
@@ -23,11 +30,6 @@ tb AS (
     DATETIME(t1.datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
     t2.locequip,
     t2.bairro
-  FROM `rj-cetrio.ocr_radar.readings_*` t1
-  JOIN loc t2
-  ON t1.camera_numero = t2.camera_numero
-)
-
-SELECT
-  *
 FROM tb t1
+JOIN loc t2
+  ON t1.camera_numero = t2.camera_numero
