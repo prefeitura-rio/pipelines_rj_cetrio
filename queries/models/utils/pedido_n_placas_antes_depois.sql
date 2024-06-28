@@ -1,4 +1,57 @@
-WITH loc AS (
+DECLARE plate STRING DEFAULT '';
+DECLARE start_datetime DATETIME DEFAULT '2024-06-15T17:12:18';
+DECLARE end_datetime DATETIME DEFAULT '2024-06-15T17:15:52';
+DECLARE N INT64 DEFAULT 1;
+
+WITH all_readings AS (
+  SELECT
+    placa,
+    tipoveiculo,
+    velocidade,
+    DATETIME(datahora, 'America/Sao_Paulo') AS datahora_local,
+    camera_numero,
+    empresa,
+    camera_latitude AS latitude,
+    camera_longitude AS longitude,
+    DATETIME(datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
+    ROW_NUMBER() OVER (PARTITION BY camera_numero ORDER BY datahora) AS row_num
+  FROM `rj-cetrio.ocr_radar.readings_*`
+  WHERE
+    DATETIME(datahora, "America/Sao_Paulo")
+      BETWEEN DATETIME_SUB(start_datetime, INTERVAL 1 DAY)
+      AND DATETIME_ADD(end_datetime, INTERVAL 1 DAY)
+  ORDER BY datahora
+),
+
+selected AS (
+  SELECT
+    placa,
+    tipoveiculo,
+    velocidade,
+    datahora_local,
+    camera_numero,
+    empresa,
+    latitude,
+    longitude,
+    datahora_captura,
+    row_num AS selected_row_num,
+  FROM all_readings
+  WHERE placa = plate
+    AND datahora_local
+      BETWEEN start_datetime
+      AND end_datetime
+),
+
+before_and_after AS (
+  SELECT
+    a.*
+  FROM all_readings a
+  JOIN selected s
+    ON a.camera_numero = s.camera_numero
+    AND (a.row_num BETWEEN s.selected_row_num - N AND s.selected_row_num + N)
+),
+
+loc AS (
   SELECT
     t2.camera_numero,
     t1.locequip,
@@ -8,74 +61,15 @@ WITH loc AS (
   FROM `rj-cetrio.ocr_radar.equipamento` t1
   JOIN `rj-cetrio.ocr_radar.equipamento_codcet_to_camera_numero` t2
     ON t1.codcet = t2.codcet
-),
-
-tb AS (
-  SELECT
-    *,
-    DATETIME(datahora, "America/Sao_Paulo") AS datahora_local
-  FROM `rj-cetrio.ocr_radar.readings_*`
-  WHERE placa = ""
-  AND DATETIME(datahora, "America/Sao_Paulo") BETWEEN "2024-01-01T00:00:00" AND "2024-01-01T00:00:00"
-  ORDER BY datahora
-),
-
-selected AS (
-  SELECT
-    t1.placa,
-    t1.tipoveiculo,
-    t1.velocidade,
-    t1.datahora_local,
-    t1.camera_numero,
-    t1.empresa,
-    COALESCE(t2.latitude, t1.camera_latitude) AS latitude,
-    COALESCE(t2.longitude, t1.camera_longitude) AS longitude,
-    t1.datahora_captura,
-    t2.locequip,
-    t2.bairro
-  FROM tb t1
-  JOIN loc t2
-    ON t1.camera_numero = t2.camera_numero
-),
-
-all_readings AS (
-  SELECT
-    t1.placa,
-    t1.tipoveiculo,
-    t1.velocidade,
-    DATETIME(t1.datahora, 'America/Sao_Paulo') AS datahora_local,
-    t1.camera_numero,
-    t1.empresa,
-    COALESCE(t2.latitude, t1.camera_latitude) AS latitude,
-    COALESCE(t2.longitude, t1.camera_longitude) AS longitude,
-    DATETIME(t1.datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
-    t2.locequip,
-    t2.bairro,
-    ROW_NUMBER() OVER (PARTITION BY t1.camera_numero ORDER BY t1.datahora) AS row_num
-  FROM `rj-cetrio.ocr_radar.readings_*` t1
-  JOIN loc t2
-    ON t1.camera_numero = t2.camera_numero
-),
-
-selected_with_row_num AS (
-  SELECT
-    s.*,
-    a.row_num AS selected_row_num
-  FROM selected s
-  JOIN all_readings a
-    ON s.camera_numero = a.camera_numero
-    AND s.datahora_local = a.datahora_local
-),
-
-before_and_after AS (
-  SELECT
-    a.*
-  FROM all_readings a
-  JOIN selected_with_row_num s
-    ON a.camera_numero = s.camera_numero
-    AND (a.row_num BETWEEN s.selected_row_num - 20 AND s.selected_row_num + 20)
 )
 
-SELECT *
-FROM before_and_after
-ORDER BY camera_numero, datahora_local;
+SELECT
+  b.*,
+  l.locequip,
+  l.bairro,
+  COALESCE(b.latitude, l.latitude) AS latitude,
+  COALESCE(b.longitude, l.longitude) AS longitude
+FROM before_and_after b
+LEFT JOIN loc l
+  ON b.camera_numero = l.camera_numero
+ORDER BY b.camera_numero, b.datahora_local;
