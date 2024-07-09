@@ -174,7 +174,6 @@ ocr_radar_2024_queries = {
     },
 }
 
-print(ocr_radar_2024_queries)
 
 ocr_radar_2024_clocks = generate_dump_db_schedules(
     interval=timedelta(days=365 * 5),
