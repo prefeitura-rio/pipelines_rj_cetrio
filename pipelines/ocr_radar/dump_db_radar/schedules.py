@@ -26,7 +26,7 @@ ocr_radar_equipamento_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "overwrite",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[Equipamento]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[Equipamento]",
         "interval": timedelta(days=7),
     },
 }
@@ -56,7 +56,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_012024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_01{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 2, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_02": {
         "partition_columns": "Data",
@@ -65,7 +68,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_022024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_02{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 3, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_03": {
         "partition_columns": "Data",
@@ -74,7 +80,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_032024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_03{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 4, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_04": {
         "partition_columns": "Data",
@@ -83,7 +92,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_042024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_04{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 5, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_05": {
         "partition_columns": "Data",
@@ -92,7 +104,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_052024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_05{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 6, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_06": {
         "partition_columns": "Data",
@@ -101,7 +116,10 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_062024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_06{current_year_2024}]",
+        "start_date": datetime(
+            current_year_2024, 7, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
+        ),
     },
     "readings_2024_07": {
         "partition_columns": "Data",
@@ -110,7 +128,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_072024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_07{current_year_2024}]",
         "start_date": datetime(
             current_year_2024, 8, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -122,7 +140,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_082024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_08{current_year_2024}]",
         "start_date": datetime(
             current_year_2024, 9, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -134,7 +152,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_092024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_09{current_year_2024}]",
         "start_date": datetime(
             current_year_2024, 10, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -146,7 +164,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_102024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_10{current_year_2024}]",
         "start_date": datetime(
             current_year_2024, 11, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -158,7 +176,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_112024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_11{current_year_2024}]",
         "start_date": datetime(
             current_year_2024, 12, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -170,7 +188,7 @@ ocr_radar_2024_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "append",
-        "execute_query": "SELECT * FROM [DBOCR_2024].[dbo].[OCR_122024]",
+        "execute_query": f"SELECT * FROM [DBOCR_{current_year_2024}].[dbo].[OCR_12{current_year_2024}]",
         "start_date": datetime(
             current_year_2024 + 1, 1, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")
         ),
@@ -180,7 +198,6 @@ ocr_radar_2024_queries = {
 ocr_radar_2024_clocks = generate_dump_db_schedules(
     interval=timedelta(days=365 * 5),
     start_date=datetime(2024, 7, 9, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
-    runs_interval_minutes=7 * 60 * 24,
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
