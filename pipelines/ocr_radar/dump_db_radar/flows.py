@@ -15,9 +15,7 @@ from prefeitura_rio.pipelines_utils.state_handlers import (
 )
 
 from pipelines.constants import constants
-from pipelines.ocr_radar.dump_db_radar.schedules import (
-    ocr_radar_monthly_update_schedule,
-)
+from pipelines.ocr_radar.dump_db_radar.schedules import ocr_radar_schedule
 
 dump_sql_ocr_radar_flow = deepcopy(dump_sql_flow)
 dump_sql_ocr_radar_flow.state_handlers = [handler_inject_bd_credentials, handler_initialize_sentry]
@@ -42,4 +40,4 @@ dump_sql_ocr_radar_flow = set_default_parameters(
     dump_sql_ocr_radar_flow, default_parameters=ocr_radar_default_parameters
 )
 
-dump_sql_ocr_radar_flow.schedule = ocr_radar_monthly_update_schedule
+dump_sql_ocr_radar_flow.schedule = ocr_radar_schedule
