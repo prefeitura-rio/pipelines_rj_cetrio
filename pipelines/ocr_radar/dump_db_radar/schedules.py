@@ -174,6 +174,8 @@ ocr_radar_2024_queries = {
     },
 }
 
+print(ocr_radar_2024_queries)
+
 ocr_radar_2024_clocks = generate_dump_db_schedules(
     interval=timedelta(days=365 * 5),
     start_date=datetime(2024, 7, 9, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
@@ -193,6 +195,3 @@ ocr_radar_2024_clocks = generate_dump_db_schedules(
 ocr_radar_schedule = Schedule(
     clocks=untuple(ocr_radar_equipamento_clocks) + untuple(ocr_radar_2024_clocks)
 )
-
-
-print(ocr_radar_schedule)
