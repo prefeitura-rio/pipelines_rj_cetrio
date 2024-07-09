@@ -58,7 +58,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_01{year_2024}]",
-        "start_date": datetime(year_2024, 2, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 2, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_02": {
         "partition_columns": "Data",
@@ -68,7 +68,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_02{year_2024}]",
-        "start_date": datetime(year_2024, 3, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 3, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_03": {
         "partition_columns": "Data",
@@ -78,7 +78,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_03{year_2024}]",
-        "start_date": datetime(year_2024, 4, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 4, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_04": {
         "partition_columns": "Data",
@@ -88,7 +88,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_04{year_2024}]",
-        "start_date": datetime(year_2024, 5, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 5, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_05": {
         "partition_columns": "Data",
@@ -98,7 +98,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_05{year_2024}]",
-        "start_date": datetime(year_2024, 6, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 6, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_06": {
         "partition_columns": "Data",
@@ -108,7 +108,7 @@ ocr_radar_2024_queries = {
         "materialization_mode": "prod",
         "dump_mode": "append",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[OCR_06{year_2024}]",
-        "start_date": datetime(year_2024, 7, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+        # "start_date": datetime(year_2024, 7, 2, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     },
     f"readings_{year_2024}_07": {
         "partition_columns": "Data",
@@ -179,6 +179,7 @@ print(ocr_radar_2024_queries)
 ocr_radar_2024_clocks = generate_dump_db_schedules(
     interval=timedelta(days=365 * 5),
     start_date=datetime(2024, 7, 9, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+    runs_interval_minutes=7 * 24 * 60,
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
