@@ -24,6 +24,7 @@ year_2024 = 2024
 # automatic generated using https://jupyter.dados.rio/lab/tree/bases/rj-cetrio/ocr_radar/generate_queries.ipynb
 ocr_radar_equipamento_queries = {
     "equipamento": {
+        "dataset_id": "ocr_radar",
         "materialize_after_dump": True,
         "biglake_table": True,
         "materialization_mode": "prod",
@@ -35,7 +36,7 @@ ocr_radar_equipamento_queries = {
 
 ocr_radar_equipamento_clocks = generate_dump_db_schedules(
     interval=timedelta(days=7),
-    start_date=datetime(2024, 7, 9, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
+    start_date=datetime(2024, 7, 7, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
@@ -178,7 +179,7 @@ ocr_radar_2024_queries = {
 ocr_radar_2024_clocks = generate_dump_db_schedules(
     interval=timedelta(days=365 * 5),
     start_date=datetime(2024, 7, 9, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
-    runs_interval_minutes=7 * 24 * 60,
+    runs_interval_minutes=2 * 24 * 60,
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
@@ -186,7 +187,7 @@ ocr_radar_2024_clocks = generate_dump_db_schedules(
     db_host="10.39.64.50",
     db_port="1433",
     db_type="sql_server",
-    dataset_id="ocr_radar",
+    dataset_id="ocr_radar_historico",
     infisical_secret_path="/db-ocr-radar",
     table_parameters=ocr_radar_2024_queries,
 )
