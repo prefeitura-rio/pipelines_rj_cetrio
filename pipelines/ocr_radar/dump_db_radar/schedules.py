@@ -180,4 +180,9 @@ ocr_radar_clocks = generate_dump_db_schedules(
 )
 
 
-ocr_radar_schedule = Schedule(clocks=untuple(ocr_radar_clocks + ocr_radar_equipamento_clocks))
+ocr_radar_schedule = Schedule(
+    clocks=untuple(ocr_radar_clocks) + untuple(ocr_radar_equipamento_clocks)
+)
+
+
+print(ocr_radar_schedule)
