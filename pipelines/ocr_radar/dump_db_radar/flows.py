@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Database dumping flows for cetrio project
+Database dumping flows for cetrio project.
 """
 
 from copy import deepcopy
@@ -27,6 +27,7 @@ dump_sql_ocr_radar_flow.run_config = KubernetesRun(
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
 )
+
 
 ocr_radar_default_parameters = {
     "db_database": "DWOCR_Staging",
