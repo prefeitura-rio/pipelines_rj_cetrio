@@ -1,7 +1,7 @@
 DECLARE plate STRING DEFAULT '';
-DECLARE start_datetime DATETIME DEFAULT '2024-06-15T17:12:18';
-DECLARE end_datetime DATETIME DEFAULT '2024-06-15T17:15:52';
-DECLARE N INT64 DEFAULT 1;
+DECLARE start_datetime DATETIME DEFAULT '2024-01-01T00:00:00';
+DECLARE end_datetime DATETIME DEFAULT   '2024-01-01T00:00:00';
+DECLARE N INT64 DEFAULT 20;
 
 WITH all_readings AS (
   SELECT
@@ -14,13 +14,29 @@ WITH all_readings AS (
     camera_latitude AS latitude,
     camera_longitude AS longitude,
     DATETIME(datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
-    ROW_NUMBER() OVER (PARTITION BY camera_numero ORDER BY datahora) AS row_num
+    ROW_NUMBER() OVER (PARTITION BY placa, datahora ORDER BY datahora) AS row_num_duplicate
   FROM `rj-cetrio.ocr_radar.readings_*`
   WHERE
     DATETIME(datahora, "America/Sao_Paulo")
       BETWEEN DATETIME_SUB(start_datetime, INTERVAL 1 DAY)
       AND DATETIME_ADD(end_datetime, INTERVAL 1 DAY)
   ORDER BY datahora
+),
+
+clean_reading AS (
+  SELECT
+    placa,
+    tipoveiculo,
+    velocidade,
+    datahora_local,
+    camera_numero,
+    empresa,
+    latitude,
+    longitude,
+    datahora_captura,
+    ROW_NUMBER() OVER (PARTITION BY camera_numero ORDER BY datahora_local) AS row_num
+  FROM all_readings
+  WHERE row_num_duplicate = 1
 ),
 
 selected AS (
@@ -35,7 +51,7 @@ selected AS (
     longitude,
     datahora_captura,
     row_num AS selected_row_num,
-  FROM all_readings
+  FROM clean_reading
   WHERE placa = plate
     AND datahora_local
       BETWEEN start_datetime
@@ -45,7 +61,7 @@ selected AS (
 before_and_after AS (
   SELECT
     a.*
-  FROM all_readings a
+  FROM clean_reading a
   JOIN selected s
     ON a.camera_numero = s.camera_numero
     AND (a.row_num BETWEEN s.selected_row_num - N AND s.selected_row_num + N)
