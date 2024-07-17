@@ -1,8 +1,9 @@
 WITH radars AS (
   SELECT
-    camera_numero,
-    latitude,
-    longitude,
+    COALESCE(t1.codcet, t2.codcet) AS codcet,
+    t2.camera_numero,
+    t1.latitude,
+    t1.longitude,
     ST_GEOGPOINT(CAST(t1.longitude AS FLOAT64), CAST(t1.latitude AS FLOAT64)) AS position
   FROM `rj-cetrio.ocr_radar.equipamento` t1
   JOIN `rj-cetrio.ocr_radar.equipamento_codcet_to_camera_numero` t2
@@ -20,7 +21,8 @@ used_radars AS (
 
 selected_radar AS (
   SELECT
-        t2.camera_numero,
+        t1.codcet,
+        COALESCE(t1.camera_numero, t2.camera_numero) AS camera_numero,
         COALESCE(t1.latitude, t2.camera_latitude) AS latitude_radar,
         COALESCE(t1.longitude, t2.camera_longitude) AS longitude_radar,
         COALESCE(
@@ -28,7 +30,7 @@ selected_radar AS (
             ST_GEOGPOINT(CAST(t2.camera_latitude AS FLOAT64), CAST(t2.camera_longitude AS FLOAT64))
         ) AS position,
     FROM radars t1
-    RIGHT JOIN used_radars t2
+    FULL OUTER JOIN used_radars t2
         ON t1.camera_numero = t2.camera_numero
 ),
 
@@ -45,6 +47,7 @@ cameras AS (
 
 ranked_cameras AS (
   SELECT
+    t2.codcet,
     t2.camera_numero,
     t2.latitude_radar,
     t2.longitude_radar,
@@ -61,6 +64,7 @@ ranked_cameras AS (
 )
 
 SELECT
+  codcet,
   camera_numero,
   latitude_radar,
   longitude_radar,
