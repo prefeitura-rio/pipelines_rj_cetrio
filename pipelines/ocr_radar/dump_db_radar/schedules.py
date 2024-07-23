@@ -207,5 +207,6 @@ ocr_radar_2024_clocks = generate_dump_db_schedules(
 
 
 ocr_radar_schedule = Schedule(
-    clocks=untuple(ocr_radar_equipamento_clocks) + untuple(ocr_radar_2024_clocks)
+    clocks=untuple(ocr_radar_equipamento_clocks)
+    # + untuple(ocr_radar_2024_clocks)
 )
