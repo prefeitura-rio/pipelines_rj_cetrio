@@ -31,12 +31,12 @@ ocr_radar_equipamento_queries = {
         "materialization_mode": "prod",
         "dump_mode": "overwrite",
         "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[Equipamento]",
-        "interval": timedelta(days=7),
+        "interval": timedelta(days=1),
     },
 }
 
 ocr_radar_equipamento_clocks = generate_dump_db_schedules(
-    interval=timedelta(days=7),
+    interval=timedelta(days=1),
     start_date=datetime(2024, 7, 7, 22, 30, tzinfo=pytz.timezone("America/Sao_Paulo")),
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
