@@ -25,5 +25,5 @@ models:
       +materialized: view
       +schema: example
     ocr_radar:
-      +materialized: view
+      +materialized: table
       +schema: ocr_radar
