@@ -7,5 +7,5 @@ SELECT
     CAST(longitude AS FLOAT64) as longitude,
     CAST(logradouro AS STRING) as logradouro,
     CAST(sentido AS STRING) as sentido,
-    CAST(sentido AS INT64) as velofisc
+    CAST(REGEXP_REPLACE(velofisc, r'\.0$', '') AS INT64) as velofisc
 FROM `rj-cetrio.ocr_radar_staging.equipamento`
