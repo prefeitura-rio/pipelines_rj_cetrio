@@ -1,3 +1,4 @@
+
 SELECT
     CAST(codcet AS STRING) as codcet,
     CAST(locequip AS STRING) as locequip,
