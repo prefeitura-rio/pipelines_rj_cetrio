@@ -80,11 +80,18 @@ loc AS (
 )
 
 SELECT
-  b.*,
+  b.placa,
+  b.tipoveiculo,
+  b.velocidade,
+  b.datahora_local,
+  b.camera_numero,
+  b.empresa,
+  COALESCE(b.latitude, l.latitude) AS latitude,
+  COALESCE(b.longitude, l.longitude) AS longitude,
+  b.datahora_captura,
+  b.row_num,
   l.locequip,
   l.bairro,
-  COALESCE(b.latitude, l.latitude) AS latitude,
-  COALESCE(b.longitude, l.longitude) AS longitude
 FROM before_and_after b
 LEFT JOIN loc l
   ON b.camera_numero = l.camera_numero
