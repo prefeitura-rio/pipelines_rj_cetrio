@@ -15,13 +15,12 @@ WITH all_readings AS (
     camera_longitude AS longitude,
     DATETIME(datahora_captura, 'America/Sao_Paulo') AS datahora_captura,
     ROW_NUMBER() OVER (PARTITION BY placa, datahora ORDER BY datahora) AS row_num_duplicate
-  FROM `rj-cetrio.ocr_radar.readings_2024*`
+  FROM `rj-cetrio.ocr_radar.readings_*`
   WHERE
     DATETIME(datahora, "America/Sao_Paulo")
       BETWEEN DATETIME_SUB(start_datetime, INTERVAL 1 DAY)
       AND DATETIME_ADD(end_datetime, INTERVAL 1 DAY)
   QUALIFY(row_num_duplicate) = 1
-  -- ORDER BY datahora
 ),
 
 all_loc AS (
