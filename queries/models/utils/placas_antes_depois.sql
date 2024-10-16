@@ -1,6 +1,6 @@
 DECLARE plate STRING DEFAULT ''; -- plate of the vehicle to be monitored
-DECLARE start_datetime DATETIME DEFAULT '2024-01-01T00:00:00'; -- Start time of the detection range
-DECLARE end_datetime DATETIME DEFAULT   '2024-01-01T00:00:00'; -- End time of the detection range
+DECLARE start_datetime TIMESTAMP DEFAULT '2024-10-15T01:00:00.000Z'; -- Start timestamp of the detection range
+DECLARE end_datetime TIMESTAMP DEFAULT   '2024-10-15T01:00:00.000Z'; -- End timestamp of the detection range
 DECLARE N INT64 DEFAULT 5; -- Number of minutes to look for records before and after the selected time
 
 -- Select all radar readings 
@@ -18,8 +18,8 @@ WITH all_readings AS (
   FROM `rj-cetrio.ocr_radar.readings_*`
   WHERE
     DATETIME(datahora, "America/Sao_Paulo")
-      BETWEEN DATETIME_SUB(start_datetime, INTERVAL 1 DAY)
-      AND DATETIME_ADD(end_datetime, INTERVAL 1 DAY)
+      BETWEEN DATETIME(DATETIME_SUB(start_datetime, INTERVAL 1 DAY), "America/Sao_Paulo")
+      AND DATETIME(DATETIME_ADD(end_datetime, INTERVAL 1 DAY), "America/Sao_Paulo")
   QUALIFY(row_num_duplicate) = 1
 ),
 
@@ -98,8 +98,8 @@ selected AS (
   WHERE 
     placa = plate
     AND datahora_local
-      BETWEEN start_datetime
-      AND end_datetime
+      BETWEEN DATETIME(start_datetime, "America/Sao_Paulo")
+      AND DATETIME(end_datetime, "America/Sao_Paulo")
 ),
 -- Look for records before and after the selected reading time
 before_and_after AS (
