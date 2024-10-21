@@ -251,6 +251,7 @@ final_array_agg AS (
         a.speed,
         b.count
       )
+    ORDER BY a.timestamp
     ) AS detections
   FROM
     final_results a
