@@ -1,7 +1,8 @@
 DECLARE plate STRING DEFAULT ''; -- plate of the vehicle to be monitored
 DECLARE start_datetime TIMESTAMP DEFAULT '2024-10-15T01:00:00.000Z'; -- Start timestamp of the detection range
 DECLARE end_datetime TIMESTAMP DEFAULT   '2024-10-15T01:00:00.000Z'; -- End timestamp of the detection range
-DECLARE N INT64 DEFAULT 5; -- Number of minutes to look for records before and after the selected time
+DECLARE N_minutes INT64 DEFAULT 5; -- Number of minutes to look for records before and after the selected_readings time
+DECLARE N_plates INT64 DEFAULT 5; -- Quantity of plates to look for records before and after the selected_readings time
 
 -- Select all radar readings 
 WITH all_readings AS (
@@ -23,7 +24,8 @@ WITH all_readings AS (
   QUALIFY(row_num_duplicate) = 1
 ),
 
-all_loc AS (
+-- Get all unique locations and associated information
+unique_locations AS (
   SELECT
     t1.codcet,
     t2.camera_numero,
@@ -48,17 +50,19 @@ all_loc AS (
   JOIN `rj-cetrio.ocr_radar.equipamento_codcet_to_camera_numero` t2
     ON t1.codcet = t2.codcet
 ),
+
 -- Select unique coordinates for each location
-loc AS (
+unique_location_coordinates  AS (
   SELECT
     hashed_coordinates,
     locequip,
     ROW_NUMBER() OVER(PARTITION BY hashed_coordinates) rn
-  FROM all_loc
+  FROM unique_locations
   QUALIFY(rn) = 1
 ),
+
 -- Group radar information with readings
-group_radars AS (
+radar_group AS (
   SELECT
     l.camera_numero,
     l.codcet,
@@ -69,8 +73,8 @@ group_radars AS (
     l.sentido,
     l.hashed_coordinates
   FROM
-    all_loc l
-    JOIN loc b ON l.hashed_coordinates = b.hashed_coordinates
+    unique_locations l
+    JOIN unique_location_coordinates  b ON l.hashed_coordinates = b.hashed_coordinates
   WHERE
   -- Ensure there is at least one reading for each radar
     EXISTS (
@@ -81,8 +85,9 @@ group_radars AS (
       WHERE l.camera_numero = c.camera_numero
     )
 ),
-  -- Select specific readings for the desired license plate
-selected AS (
+
+-- Select specific readings for the desired license plate
+selected_readings AS (
   SELECT
     b.hashed_coordinates,
     a.placa,
@@ -93,15 +98,19 @@ selected AS (
     a.latitude,
     a.longitude,
     a.datahora_captura,
+    ROW_NUMBER() OVER(PARTITION BY a.placa ORDER BY a.datahora_local) n_deteccao,
+    DATETIME_SUB(a.datahora_local, INTERVAL N_minutes MINUTE) AS datahora_inicio,
+    DATETIME_ADD(a.datahora_local, INTERVAL N_minutes MINUTE) AS datahora_fim
   FROM all_readings a
-  JOIN group_radars b ON a.camera_numero = b.camera_numero
+  JOIN radar_group b ON a.camera_numero = b.camera_numero
   WHERE 
-    placa = plate
+    a.placa = plate
     AND datahora_local
       BETWEEN DATETIME(start_datetime, "America/Sao_Paulo")
       AND DATETIME(end_datetime, "America/Sao_Paulo")
 ),
--- Look for records before and after the selected reading time
+
+-- Look for records before and after the selected_readings reading time
 before_and_after AS (
   SELECT
     l.codcet,
@@ -109,70 +118,159 @@ before_and_after AS (
     l.locequip,
     l.bairro,
     l.sentido,
-    a.*
+    a.*,
+    s.n_deteccao
   FROM 
     all_readings a
-  JOIN group_radars l ON a.camera_numero = l.camera_numero
-  JOIN selected s ON l.hashed_coordinates = s.hashed_coordinates
+  JOIN radar_group l ON a.camera_numero = l.camera_numero
+  JOIN selected_readings s ON l.hashed_coordinates = s.hashed_coordinates
     AND (
       a.datahora_local BETWEEN 
-        DATETIME_SUB(s.datahora_local, INTERVAL N MINUTE) 
-        AND DATETIME_ADD(s.datahora_local, INTERVAL N MINUTE)
+        s.datahora_inicio AND s.datahora_fim
     )
 ),
--- Count occurrences of plates in 'before_and_after'
-qty_occurrences AS (
-  SELECT
-    placa,
-    COUNT(placa) `count`
-  FROM
-    before_and_after
-  GROUP BY ALL
-),
+
 -- Aggregate final results
 aggregations AS (
   SELECT
+    b.n_deteccao AS id_detection,
+    s.datahora_local AS detection_time, -- group by each plate detection
     b.hashed_coordinates AS id_camera_groups,
     ARRAY(
       SELECT
         g.camera_numero
       FROM
-        group_radars g
+        radar_group g
       WHERE g.hashed_coordinates = b.hashed_coordinates
     ) AS radars,
-    DATETIME_SUB(s.datahora_local, INTERVAL N MINUTE) AS start_time,
-    DATETIME_ADD(s.datahora_local, INTERVAL N MINUTE) AS end_time,
     CONCAT(b.locequip, b.sentido, ' - ', b.bairro) AS location,
     b.latitude AS latitude,
     b.longitude AS longitude,
     ARRAY_AGG(
       STRUCT(
         b.datahora_local AS `timestamp`,
-        b.placa AS plate,
+        b.placa,
         b.camera_numero,
         RIGHT(b.codcet, 1) AS lane,
-        b.velocidade AS speed,
-        o.`count`
+        b.velocidade AS speed
       )
       ORDER BY 
         b.datahora_local) as detections -- Organize detections by date/time
   FROM before_and_after b
-  JOIN qty_occurrences o ON b.placa = o.placa
-  JOIN selected s ON b.hashed_coordinates = s.hashed_coordinates
+  JOIN selected_readings s ON b.hashed_coordinates = s.hashed_coordinates AND b.n_deteccao = s.n_deteccao
   GROUP BY all
+),
+
+-- Order detection results
+detection_orders AS (
+  SELECT
+    a.id_detection,
+    a.id_camera_groups,
+    a.radars,
+    a.detection_time,
+    a.location,
+    a.latitude,
+    a.longitude,
+    d.*,
+    ROW_NUMBER() OVER(PARTITION BY a.id_detection ORDER BY d.timestamp) AS detection_order
+  FROM
+    aggregations a
+    JOIN UNNEST(a.detections) d
+),
+
+-- Select the specific detection orders for the target plate
+selected_orders AS (
+  SELECT
+    id_detection,
+    detection_order
+  FROM
+  -- Order detection results
+    detection_orders
+  WHERE
+    placa = plate
+),
+
+-- Final query to aggregate results
+final_results AS (
+  SELECT
+    a.id_detection,
+    a.id_camera_groups,
+    a.radars,
+    a.detection_time,
+    DATETIME_SUB(a.detection_time, INTERVAL N_minutes MINUTE) AS start_time,
+    DATETIME_ADD(a.detection_time, INTERVAL N_minutes MINUTE) AS end_time,
+    a.location,
+    a.latitude,
+    a.longitude,
+    a.timestamp,
+    a.placa AS plate,
+    a.camera_numero,
+    a.lane,
+    a.speed,
+    COUNT(a.placa) AS `count`
+  FROM
+  -- Order detection results
+    detection_orders a
+  JOIN 
+    selected_orders b
+  ON
+    a.id_detection = b.id_detection
+  WHERE
+    a.detection_order BETWEEN b.detection_order - N_plates AND b.detection_order + N_plates
+  GROUP BY ALL
+),
+
+-- Count plates in the final results
+plates_count AS  (
+  SELECT
+    plate,
+    COUNT(plate) AS `count`
+  FROM
+    final_results
+  GROUP BY ALL
+),
+
+-- Final aggregation of results into an array
+final_array_agg AS (
+  SELECT
+    a.id_detection,
+    a.id_camera_groups,
+    a.radars,
+    a.detection_time,
+    a.start_time,
+    a.end_time,
+    a.location,
+    a.latitude,
+    a.longitude,
+    ARRAY_AGG(
+      STRUCT(
+        a.timestamp,
+        a.plate,
+        a.camera_numero,
+        a.lane,
+        a.speed,
+        b.count
+      )
+    ) AS detections
+  FROM
+    final_results a
+  JOIN
+    plates_count b
+  ON a.plate = b.plate
+  GROUP BY ALL
 )
--- Select the final results from the aggregation
-SELECT 
+
+-- Final selection to retrieve results
+SELECT
   id_camera_groups,
   radars,
+  detection_time,
   start_time,
   end_time,
   location,
   latitude,
   longitude,
   ARRAY_LENGTH(detections) AS total_detection,
-  detections,
-FROM 
-  aggregations
-ORDER BY
-  start_time
+  detections
+FROM
+  final_array_agg
