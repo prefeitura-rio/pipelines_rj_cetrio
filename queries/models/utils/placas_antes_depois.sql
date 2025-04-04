@@ -4,7 +4,7 @@ DECLARE end_datetime TIMESTAMP DEFAULT   '2024-10-15T01:00:00.000Z'; -- End time
 DECLARE N_minutes INT64 DEFAULT 5; -- Number of minutes to look for records before and after the selected_readings time
 DECLARE N_plates INT64 DEFAULT 5; -- Quantity of plates to look for records before and after the selected_readings time
 
--- Select all radar readings 
+-- Select all radar readings
 WITH all_readings AS (
   SELECT
     placa,
@@ -41,7 +41,7 @@ unique_locations AS (
     TO_BASE64(
       MD5(
         CONCAT(
-          LEFT(t1.codcet, LENGTH(t1.codcet) -1), 
+          LEFT(t1.codcet, LENGTH(t1.codcet) -1),
           COALESCE(t1.sentido, '') -- Combine codcet and sentido, omitting the last character of codcet
         )
       )
@@ -103,7 +103,7 @@ selected_readings AS (
     DATETIME_ADD(a.datahora_local, INTERVAL N_minutes MINUTE) AS datahora_fim
   FROM all_readings a
   JOIN radar_group b ON a.camera_numero = b.camera_numero
-  WHERE 
+  WHERE
     a.placa = plate
     AND datahora_local
       BETWEEN DATETIME(start_datetime, "America/Sao_Paulo")
@@ -120,12 +120,12 @@ before_and_after AS (
     l.sentido,
     a.*,
     s.n_deteccao
-  FROM 
+  FROM
     all_readings a
   JOIN radar_group l ON a.camera_numero = l.camera_numero
   JOIN selected_readings s ON l.hashed_coordinates = s.hashed_coordinates
     AND (
-      a.datahora_local BETWEEN 
+      a.datahora_local BETWEEN
         s.datahora_inicio AND s.datahora_fim
     )
 ),
@@ -154,7 +154,7 @@ aggregations AS (
         RIGHT(b.codcet, 1) AS lane,
         b.velocidade AS speed
       )
-      ORDER BY 
+      ORDER BY
         b.datahora_local) as detections -- Organize detections by date/time
   FROM before_and_after b
   JOIN selected_readings s ON b.hashed_coordinates = s.hashed_coordinates AND b.n_deteccao = s.n_deteccao
@@ -211,7 +211,7 @@ final_results AS (
   FROM
   -- Order detection results
     detection_orders a
-  JOIN 
+  JOIN
     selected_orders b
   ON
     a.id_detection = b.id_detection
