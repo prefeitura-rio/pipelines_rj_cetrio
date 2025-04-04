@@ -27,11 +27,12 @@ selected_radar AS (
         COALESCE(t1.longitude, t2.camera_longitude) AS longitude_radar,
         COALESCE(
             t1.position,
-            ST_GEOGPOINT(CAST(t2.camera_latitude AS FLOAT64), CAST(t2.camera_longitude AS FLOAT64))
+            ST_GEOGPOINT(CAST(t2.camera_longitude AS FLOAT64), CAST(t2.camera_latitude AS FLOAT64))
         ) AS position,
     FROM radars t1
     FULL OUTER JOIN used_radars t2
         ON t1.camera_numero = t2.camera_numero
+
 ),
 
 cameras AS (
@@ -58,9 +59,9 @@ ranked_cameras AS (
     t1.longitude,
     ST_DISTANCE(t1.position, t2.position) AS distance,
     ROW_NUMBER() OVER (PARTITION BY t2.camera_numero ORDER BY ST_DISTANCE(t1.position, t2.position)) AS rank
-  FROM cameras t1
-  JOIN selected_radar t2
-  ON ST_DWithin(t1.position, t2.position, 100000) -- Large enough distance to include all relevant cameras
+  FROM selected_radar t2
+  LEFT JOIN  cameras t1
+    ON ST_DWithin(t1.position, t2.position, 100000) -- Large enough distance to include all relevant cameras
 )
 
 SELECT
@@ -77,6 +78,7 @@ SELECT
 FROM ranked_cameras
 WHERE rank <= 5
 ORDER BY camera_numero, distance
+
 
 
 
