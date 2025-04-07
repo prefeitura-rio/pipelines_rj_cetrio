@@ -20,6 +20,7 @@ from pipelines.constants import constants
 #####################################
 
 year_2024 = 2024
+year_2025 = 2025
 statr_month = 7
 start_day = 16
 # automatic generated using https://jupyter.dados.rio/lab/tree/bases/rj-cetrio/ocr_radar/generate_queries.ipynb
@@ -41,7 +42,7 @@ ocr_radar_equipamento_clocks = generate_dump_db_schedules(
     labels=[
         constants.RJ_CETRIO_AGENT_LABEL.value,
     ],
-    db_database="DBOCR_2024",
+    db_database="DBOCR_2025",
     db_host="10.39.64.50",
     db_port="1433",
     db_type="sql_server",

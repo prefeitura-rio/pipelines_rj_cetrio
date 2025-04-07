@@ -1,5 +1,6 @@
 
 SELECT
+    FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", CURRENT_TIMESTAMP(), "America/Sao_Paulo") as updated_at,
     CAST(codcet AS STRING) as codcet,
     CAST(locequip AS STRING) as locequip,
     CAST(bairro AS STRING) as bairro,
