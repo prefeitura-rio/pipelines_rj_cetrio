@@ -74,7 +74,8 @@ SELECT
   rtsp,
   latitude,
   longitude,
-  distance
+  distance,
+  rank
 FROM ranked_cameras
 WHERE rank <= 5
 ORDER BY camera_numero, distance
