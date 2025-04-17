@@ -9,4 +9,8 @@ SELECT
     CAST(logradouro AS STRING) as logradouro,
     CAST(sentido AS STRING) as sentido,
     CAST(REGEXP_REPLACE(velofisc, r'\.0$', '') AS INT64) as velofisc
+    CAST(logradouro_45 AS STRING) as logradouro_45,
+    CAST(mequipemp AS STRING) as mequipemp,
+    CAST(empresa AS STRING) as empresa,
+    CAST(horaatualacao AS STRING) as hora_atualacao
 FROM `rj-cetrio.ocr_radar_staging.equipamento`

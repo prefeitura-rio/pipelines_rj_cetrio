@@ -31,7 +31,7 @@ ocr_radar_equipamento_queries = {
         "biglake_table": True,
         "materialization_mode": "prod",
         "dump_mode": "overwrite",
-        "execute_query": f"SELECT * FROM [DBOCR_{year_2024}].[dbo].[Equipamento]",
+        "execute_query": f"SELECT * FROM [DBOCR_{year_2025}].[dbo].[Equipamento]",
         "interval": timedelta(days=1),
     },
 }
