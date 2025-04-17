@@ -1,3 +1,14 @@
+{{
+    config(
+        materialized='table',
+        partition_by={
+            "field": "data_particao",
+            "data_type": "date",
+            "granularity": "day",
+        }
+    )
+}}
+
 SELECT
     FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", CURRENT_TIMESTAMP(), "America/Sao_Paulo") as updated_at,
     CAST(codcet AS STRING) as codcet,
