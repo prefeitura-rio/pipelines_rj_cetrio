@@ -1,4 +1,3 @@
-
 SELECT
     FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", CURRENT_TIMESTAMP(), "America/Sao_Paulo") as updated_at,
     CAST(codcet AS STRING) as codcet,
@@ -8,9 +7,9 @@ SELECT
     CAST(longitude AS FLOAT64) as longitude,
     CAST(logradouro AS STRING) as logradouro,
     CAST(sentido AS STRING) as sentido,
-    CAST(REGEXP_REPLACE(velofisc, r'\.0$', '') AS INT64) as velofisc
+    CAST(REGEXP_REPLACE(velofisc, r'\.0$', '') AS INT64) as velofisc,
     CAST(logradouro_45 AS STRING) as logradouro_45,
-    CAST(mequipemp AS STRING) as mequipemp,
+    CAST(nequipemp AS STRING) as numero_equipamento,
     CAST(empresa AS STRING) as empresa,
-    CAST(horaatualacao AS STRING) as hora_atualacao
+    FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S",DATETIME(horaatualizacao)) AS data_atualizacao
 FROM `rj-cetrio.ocr_radar_staging.equipamento`

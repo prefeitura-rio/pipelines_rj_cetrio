@@ -34,6 +34,16 @@ ocr_radar_equipamento_queries = {
         "execute_query": f"SELECT * FROM [DBOCR_{year_2025}].[dbo].[Equipamento]",
         "interval": timedelta(days=1),
     },
+    "equipamento_historico": {
+        "dataset_id": "ocr_radar",
+        "materialize_after_dump": True,
+        "biglake_table": True,
+        "materialization_mode": "prod",
+        "partition_columns": "horaAtualizacao",
+        "dump_mode": "append",
+        "execute_query": f"SELECT * FROM [DBOCR_{year_2025}].[dbo].[Equipamento]",
+        "interval": timedelta(days=1),
+    },
 }
 
 ocr_radar_equipamento_clocks = generate_dump_db_schedules(
