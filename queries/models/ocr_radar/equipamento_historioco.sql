@@ -11,5 +11,6 @@ SELECT
     CAST(logradouro_45 AS STRING) as logradouro_45,
     CAST(nequipemp AS STRING) as numero_equipamento,
     CAST(empresa AS STRING) as empresa,
-    FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S",DATETIME(horaatualizacao)) AS data_atualizacao
-FROM `rj-cetrio.ocr_radar_staging.equipamento`
+    FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S",DATETIME(horaatualizacao)) AS data_atualizacao,
+    SAFE_CAST(data_particao AS DATE) data_particao,
+FROM `rj-cetrio.ocr_radar_staging.equipamento_historico`
